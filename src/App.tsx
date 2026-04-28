@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import type { Surah, Chunk, ActivityLog } from './types';
 import { mockSurahs, mockChunks, mockActivityLog } from './data/mockData';
 import { I18nProvider } from './i18n/I18nContext';
+import { ThemeProvider } from './theme/ThemeContext';
 import Sidebar from './components/layout/Sidebar';
 import MobileNav from './components/layout/MobileNav';
 import Dashboard from './components/views/Dashboard';
@@ -11,12 +12,6 @@ import Library from './components/views/Library';
 import CalendarPlanner from './components/views/CalendarPlanner';
 
 function AppShell() {
-  // ── UI state ───────────────────────────────────────────────────────────────
-  const [darkMode, setDarkMode] = useState<boolean>(() =>
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  );
-  const toggleDark = useCallback(() => setDarkMode((v) => !v), []);
-
   // ── Domain state ───────────────────────────────────────────────────────────
   const [surahs] = useState<Surah[]>(mockSurahs);
   const [chunks, setChunks] = useState<Chunk[]>(mockChunks);
@@ -55,16 +50,15 @@ function AppShell() {
   }, []);
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50">
-        <BrowserRouter>
-          {/* Desktop sidebar — uses start-0 (logical) inside Sidebar itself */}
-          <div className="hidden lg:block">
-            <Sidebar darkMode={darkMode} onToggleDark={toggleDark} />
-          </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300">
+      <BrowserRouter>
+        {/* Desktop sidebar — uses start-0 (logical) inside Sidebar itself */}
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
 
-          {/* Mobile top nav */}
-          <MobileNav darkMode={darkMode} onToggleDark={toggleDark} />
+        {/* Mobile top nav */}
+        <MobileNav />
 
           {/* Main — ms-0 on mobile, lg:ms-64 on desktop (logical margin) */}
           <main className="lg:ms-64 pt-14 lg:pt-0">
@@ -97,8 +91,7 @@ function AppShell() {
               </Routes>
             </div>
           </main>
-        </BrowserRouter>
-      </div>
+      </BrowserRouter>
     </div>
   );
 }
@@ -106,9 +99,11 @@ function AppShell() {
 // I18nProvider wraps everything so the context is available at all levels
 function App() {
   return (
-    <I18nProvider>
-      <AppShell />
-    </I18nProvider>
+    <ThemeProvider>
+      <I18nProvider>
+        <AppShell />
+      </I18nProvider>
+    </ThemeProvider>
   );
 }
 

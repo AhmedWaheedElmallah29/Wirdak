@@ -1,14 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
+import { useTheme } from '../../theme/ThemeContext';
 
-interface SidebarProps {
-  darkMode: boolean;
-  onToggleDark: () => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ darkMode, onToggleDark }) => {
+const Sidebar: React.FC = () => {
   const { t, lang, toggleLang } = useI18n();
+  const { isDark, toggleTheme } = useTheme();
 
   const navItems = [
     {
@@ -111,11 +108,11 @@ const Sidebar: React.FC<SidebarProps> = ({ darkMode, onToggleDark }) => {
 
         {/* Dark mode toggle */}
         <button
-          onClick={onToggleDark}
+          onClick={toggleTheme}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-150"
           aria-label="Toggle dark mode"
         >
-          {darkMode ? (
+          {isDark ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="5" />
               <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
@@ -128,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ darkMode, onToggleDark }) => {
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
           )}
-          {darkMode ? t.lightMode : t.darkMode}
+          {isDark ? t.lightMode : t.darkMode}
         </button>
       </div>
     </aside>

@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useI18n } from '../../i18n/I18nContext';
+import { useTheme } from '../../theme/ThemeContext';
 
-interface MobileNavProps {
-  darkMode: boolean;
-  onToggleDark: () => void;
-}
-
-const MobileNav: React.FC<MobileNavProps> = ({ darkMode, onToggleDark }) => {
+const MobileNav: React.FC = () => {
   const { t, lang, toggleLang } = useI18n();
+  const { isDark, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
 
   const navLinks = [
@@ -42,11 +39,11 @@ const MobileNav: React.FC<MobileNavProps> = ({ darkMode, onToggleDark }) => {
 
           {/* Dark mode */}
           <button
-            onClick={onToggleDark}
+            onClick={toggleTheme}
             className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             aria-label="Toggle dark mode"
           >
-            {darkMode ? '☀️' : '🌙'}
+            {isDark ? '☀️' : '🌙'}
           </button>
 
           {/* Hamburger */}
