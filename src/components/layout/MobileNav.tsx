@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { UserButton } from '@clerk/react';
 import { useI18n } from '../../i18n/I18nContext';
 import { useTheme } from '../../theme/ThemeContext';
 
@@ -32,7 +33,7 @@ const MobileNav: React.FC = () => {
           <button
             onClick={toggleLang}
             aria-label="Toggle language"
-            className="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
           >
             {lang === 'en' ? 'ع' : 'EN'}
           </button>
@@ -40,16 +41,25 @@ const MobileNav: React.FC = () => {
           {/* Dark mode */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             aria-label="Toggle dark mode"
           >
             {isDark ? '☀️' : '🌙'}
           </button>
 
+          {/* User account */}
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: 'w-7 h-7',
+              },
+            }}
+          />
+
           {/* Hamburger */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             aria-label="Open menu"
             aria-expanded={open}
           >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { UserButton } from '@clerk/react';
 import { useI18n } from '../../i18n/I18nContext';
 import { useTheme } from '../../theme/ThemeContext';
 
@@ -127,6 +128,19 @@ const Sidebar: React.FC = () => {
           )}
           {isDark ? t.lightMode : t.darkMode}
         </button>
+
+        {/* ── User account ───────────────────────────────────────────── */}
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-3 mt-2 px-1">
+          <UserButton
+            appearance={{
+              elements: {
+                rootBox: 'w-full',
+                avatarBox: 'w-8 h-8',
+              },
+            }}
+            showName
+          />
+        </div>
       </div>
     </aside>
   );

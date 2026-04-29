@@ -14,6 +14,7 @@ interface I18nContextValue {
   t: Translations;
   isRtl: boolean;
   toggleLang: () => void;
+  formatRangeInfo: (info: string) => string;
 }
 
 // ─── Context ───────────────────────────────────────────────────────────────
@@ -46,11 +47,36 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({
     setLang((prev) => (prev === "en" ? "ar" : "en"));
   }, []);
 
+  const formatRangeInfo = useCallback(
+    (info: string) => {
+      if (lang === "en") return info;
+
+      if (info === "Full Surah") return "سورة كاملة";
+
+      const ayahsMatch = info.match(/^Ayahs?\s+(\d+)[-–](\d+)/i);
+      if (ayahsMatch) return `الآيات ${ayahsMatch[1]}–${ayahsMatch[2]}`;
+
+      const ayahMatch = info.match(/^Ayah\s+(\d+)/i);
+      if (ayahMatch) return `الآية ${ayahMatch[1]}`;
+
+      const pageMatch = info.match(/^Page\s+(\d+)(?:\s*\((.*?)\))?/i);
+      if (pageMatch) {
+        // Just keeping the English extra text like "(Al-Baqarah)" if it exists
+        // as it's only generated in Dev Tools simulator
+        return `صفحة ${pageMatch[1]}${pageMatch[2] ? ` (${pageMatch[2]})` : ""}`;
+      }
+
+      return info;
+    },
+    [lang],
+  );
+
   const value: I18nContextValue = {
     lang,
     t: translations[lang],
     isRtl,
     toggleLang,
+    formatRangeInfo,
   };
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

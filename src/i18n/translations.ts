@@ -63,6 +63,8 @@ const en = {
     hard: "😓 Hard",
     good: "👍 Good",
     easy: "🌟 Easy",
+    howWellMemorized: "How well did you memorize this?",
+    nextReviewOn: (days: number, date: string) => `Next review in ${days} day${days > 1 ? 's' : ''}`,
   },
 
   // ── Review Session ────────────────────────────────────────────────────────
@@ -90,7 +92,7 @@ const en = {
     ratingEasy: "Easy",
     ratingHardDesc: "Review again soon (+1d)",
     ratingGoodDesc: "On schedule (+4d)",
-    ratingEasyDesc: "Extend interval (+14d)",
+    ratingEasyDesc: "Extend interval (+7d)",
   },
 
   // ── Library ───────────────────────────────────────────────────────────────
@@ -169,6 +171,7 @@ const en = {
     today: "Today",
     heatmapLegend: "Activity level",
     noActivity: "No activity",
+    upcomingReviews: "📅 Upcoming Reviews — Next 14 Days",
     // Day detail panel
     panelPastTitle: "Activity on",
     panelFutureTitle: "Scheduled for",
@@ -261,6 +264,8 @@ const ar: typeof en = {
     hard: "😓 صعب",
     good: "👍 جيد",
     easy: "🌟 سهل",
+    howWellMemorized: "كيف كان مستوى حفظك؟",
+    nextReviewOn: (days: number, date: string) => `مراجعتك القادمة بعد ${days} ${days === 1 ? 'يوم' : days === 2 ? 'يومين' : days <= 10 ? 'أيام' : 'يومًا'}`,
   },
 
   review: {
@@ -285,9 +290,9 @@ const ar: typeof en = {
     ratingHard: "صعب",
     ratingGood: "جيد",
     ratingEasy: "سهل",
-    ratingHardDesc: "راجع قريباً (+1 يوم)",
-    ratingGoodDesc: "وفق الجدول (+4 أيام)",
-    ratingEasyDesc: "مدّد الفترة (+14 يوماً)",
+    ratingHardDesc: "مراجعة قريبة (+1 يوم)",
+    ratingGoodDesc: "في الموعد (+4 أيام)",
+    ratingEasyDesc: "زيادة المدة (+7 أيام)",
   },
 
   library: {
@@ -359,6 +364,7 @@ const ar: typeof en = {
     today: "اليوم",
     heatmapLegend: "مستوى النشاط",
     noActivity: "لا نشاط",
+    upcomingReviews: "📅 المراجعات القادمة — الـ 14 يومًا القادمة",
     panelPastTitle: "نشاط يوم",
     panelFutureTitle: "مجدول ليوم",
     panelTodayTitle: "اليوم",

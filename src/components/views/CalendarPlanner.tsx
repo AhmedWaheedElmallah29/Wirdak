@@ -90,7 +90,7 @@ const DayPanel: React.FC<DayPanelProps> = ({ date, activity, forecast, onClose }
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             aria-label={t.calendar.close}
           >
             ✕
@@ -109,7 +109,11 @@ const DayPanel: React.FC<DayPanelProps> = ({ date, activity, forecast, onClose }
                   <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
                     <span className={`w-2 h-2 rounded-full flex-shrink-0 ${a.action === 'memorized' ? 'bg-violet-500' : 'bg-emerald-500'}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{a.surahName}</p>
+                      {lang === 'ar' ? (
+                        <p className="text-sm font-semibold font-arabic text-slate-800 dark:text-slate-100 truncate">{a.surahArabicName}</p>
+                      ) : (
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{a.surahName} <span className="text-xs font-normal text-slate-500 font-arabic">{a.surahArabicName}</span></p>
+                      )}
                       <p className="text-xs text-slate-400 dark:text-slate-500">{a.rangeInfo}</p>
                     </div>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
@@ -137,7 +141,11 @@ const DayPanel: React.FC<DayPanelProps> = ({ date, activity, forecast, onClose }
                       <span className="text-white text-xs font-bold">{c.surahNumber}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{c.surahName}</p>
+                      {lang === 'ar' ? (
+                        <p className="text-sm font-semibold font-arabic text-slate-800 dark:text-slate-100 truncate">{c.surahArabicName}</p>
+                      ) : (
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{c.surahName} <span className="text-xs font-normal text-slate-500 font-arabic">{c.surahArabicName}</span></p>
+                      )}
                       <p className="text-xs text-slate-400 dark:text-slate-500">{c.rangeInfo}</p>
                     </div>
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex-shrink-0">
@@ -224,7 +232,7 @@ const CalendarPlanner: React.FC<CalendarPlannerProps> = ({ activityLog, chunks }
           <button
             onClick={prevMonth}
             aria-label={t.calendar.prevMonth}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -241,14 +249,14 @@ const CalendarPlanner: React.FC<CalendarPlannerProps> = ({ activityLog, chunks }
           <div className="flex items-center gap-1">
             <button
               onClick={goToday}
-              className="hidden sm:block text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+              className="hidden sm:block text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             >
               {t.calendar.today}
             </button>
             <button
               onClick={nextMonth}
               aria-label={t.calendar.nextMonth}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -292,7 +300,7 @@ const CalendarPlanner: React.FC<CalendarPlannerProps> = ({ activityLog, chunks }
                 onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                 className={`
                   relative aspect-square rounded-lg flex flex-col items-center justify-center
-                  transition-all duration-150 cursor-pointer group
+                  transition-all duration-200 ease-in-out cursor-pointer group active:scale-95
                   ${isSelected
                     ? 'ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-slate-900'
                     : 'hover:ring-2 hover:ring-slate-300 dark:hover:ring-slate-600'
@@ -348,7 +356,7 @@ const CalendarPlanner: React.FC<CalendarPlannerProps> = ({ activityLog, chunks }
       {/* ── Forecast list (upcoming 14 days) ────────────────────────────────── */}
       <div className="card p-5">
         <h2 className="font-semibold text-slate-900 dark:text-slate-50 mb-4 text-sm uppercase tracking-wide">
-          📅 Upcoming Reviews — Next 14 Days
+          {t.calendar.upcomingReviews}
         </h2>
         {(() => {
           const upcoming = Object.entries(forecastByDate)
@@ -377,7 +385,14 @@ const CalendarPlanner: React.FC<CalendarPlannerProps> = ({ activityLog, chunks }
               <div className="flex-1 flex flex-wrap gap-1.5">
                 {fc.map((c) => (
                   <span key={c.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 font-medium">
-                    <span className="font-arabic text-xs">{c.surahArabicName}</span>
+                    {lang === 'ar' ? (
+                      <span className="font-arabic text-xs">{c.surahArabicName}</span>
+                    ) : (
+                      <>
+                        <span className="text-xs">{c.surahName}</span>
+                        <span className="font-arabic text-xs">{c.surahArabicName}</span>
+                      </>
+                    )}
                     <span className="text-teal-400">·</span>
                     {c.rangeInfo}
                   </span>

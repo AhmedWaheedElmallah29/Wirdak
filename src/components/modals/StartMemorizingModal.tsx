@@ -10,7 +10,7 @@ interface StartMemorizingModalProps {
 }
 
 const StartMemorizingModal: React.FC<StartMemorizingModalProps> = ({ surah, onClose, onConfirm }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [startAyah, setStartAyah] = useState('1');
   const [endAyah, setEndAyah] = useState('5');
   const [error, setError] = useState('');
@@ -63,10 +63,19 @@ const StartMemorizingModal: React.FC<StartMemorizingModalProps> = ({ surah, onCl
           <span className="text-white text-xs font-bold">{surah.number}</span>
         </div>
         <div>
-          <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm">{surah.name}</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            <span className="font-arabic text-emerald-600 dark:text-emerald-400">{surah.arabicName}</span>
-            {' · '}{surah.totalVerses} {t.library.verses} · {t.library.juz} {surah.juz}
+          {lang === 'ar' ? (
+            <p className="font-semibold font-arabic text-emerald-600 dark:text-emerald-400 text-sm">{surah.arabicName}</p>
+          ) : (
+            <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm">{surah.name}</p>
+          )}
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {lang !== 'ar' && (
+              <>
+                <span className="font-arabic text-emerald-600 dark:text-emerald-400">{surah.arabicName}</span>
+                {' · '}
+              </>
+            )}
+            {surah.totalVerses} {t.library.verses} · {t.library.juz} {surah.juz}
           </p>
         </div>
       </div>

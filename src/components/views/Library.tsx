@@ -16,7 +16,7 @@ type SortKey = 'number' | 'name' | 'progress' | 'status';
 type ViewMode = 'grid' | 'list';
 
 const Library: React.FC<LibraryProps> = ({ surahs, chunks, onAddChunk }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [filter, setFilter] = useState<FilterStatus>('all');
   const [sort, setSort] = useState<SortKey>('number');
   const [search, setSearch] = useState('');
@@ -80,8 +80,14 @@ const Library: React.FC<LibraryProps> = ({ surahs, chunks, onAddChunk }) => {
         </div>
 
         <div>
-          <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm leading-tight">{surah.name}</p>
-          <p className="text-base text-emerald-600 dark:text-emerald-400 font-arabic mt-1">{surah.arabicName}</p>
+          {lang === 'ar' ? (
+            <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400 font-arabic leading-tight">{surah.arabicName}</p>
+          ) : (
+            <>
+              <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm leading-tight">{surah.name}</p>
+              <p className="text-base text-emerald-600 dark:text-emerald-400 font-arabic mt-1">{surah.arabicName}</p>
+            </>
+          )}
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {surah.totalVerses} {t.library.verses} · {t.library.juz} {surah.juz}
           </p>
@@ -156,7 +162,7 @@ const Library: React.FC<LibraryProps> = ({ surahs, chunks, onAddChunk }) => {
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`px-3 py-2 text-sm transition-colors ${
+                className={`px-3 py-2 text-sm transition-all duration-200 ease-in-out cursor-pointer active:scale-95 ${
                   view === v ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
                 aria-label={v === 'grid' ? t.library.gridView : t.library.listView}
@@ -184,7 +190,7 @@ const Library: React.FC<LibraryProps> = ({ surahs, chunks, onAddChunk }) => {
             <button
               key={value}
               onClick={() => setFilter(value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ease-in-out cursor-pointer hover:scale-[1.02] active:scale-95 ${
                 filter === value
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -228,8 +234,14 @@ const Library: React.FC<LibraryProps> = ({ surahs, chunks, onAddChunk }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm">{surah.name}</p>
-                      <p className="text-sm text-slate-400 dark:text-slate-500 font-arabic">{surah.arabicName}</p>
+                      {lang === 'ar' ? (
+                        <p className="font-semibold font-arabic text-slate-900 dark:text-slate-50 text-sm">{surah.arabicName}</p>
+                      ) : (
+                        <>
+                          <p className="font-semibold text-slate-900 dark:text-slate-50 text-sm">{surah.name}</p>
+                          <p className="text-sm text-slate-400 dark:text-slate-500 font-arabic">{surah.arabicName}</p>
+                        </>
+                      )}
                       {chunkCount > 0 && <span className="text-xs text-teal-600 dark:text-teal-400">📌 {chunkCount}</span>}
                     </div>
                     <p className="text-xs text-slate-400 dark:text-slate-500">
