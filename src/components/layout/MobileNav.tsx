@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { UserButton } from '@clerk/react';
-import { useI18n } from '../../i18n/I18nContext';
-import { useTheme } from '../../theme/ThemeContext';
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { UserButton } from "@clerk/react";
+import { useI18n } from "../../i18n/I18nContext";
+import { useTheme } from "../../theme/ThemeContext";
 
 const MobileNav: React.FC = () => {
   const { t, lang, toggleLang } = useI18n();
@@ -10,10 +10,10 @@ const MobileNav: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   const navLinks = [
-    { to: '/', label: t.nav.dashboard },
-    { to: '/review', label: t.nav.review },
-    { to: '/library', label: t.nav.library },
-    { to: '/calendar', label: t.nav.calendar },
+    { to: "/", label: t.nav.dashboard },
+    { to: "/review", label: t.nav.review },
+    { to: "/library", label: t.nav.library },
+    { to: "/calendar", label: t.nav.calendar },
   ];
 
   return (
@@ -24,7 +24,9 @@ const MobileNav: React.FC = () => {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
             <span className="text-white font-bold text-sm font-arabic">م</span>
           </div>
-          <span className="font-bold text-slate-900 dark:text-slate-50">{t.appName}</span>
+          <span className="font-bold text-slate-900 dark:text-slate-50">
+            {t.appName}
+          </span>
         </div>
 
         {/* Actions */}
@@ -35,7 +37,7 @@ const MobileNav: React.FC = () => {
             aria-label="Toggle language"
             className="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
           >
-            {lang === 'en' ? 'ع' : 'EN'}
+            {lang === "en" ? "ع" : "EN"}
           </button>
 
           {/* Dark mode */}
@@ -44,14 +46,18 @@ const MobileNav: React.FC = () => {
             className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 ease-in-out cursor-pointer active:scale-95"
             aria-label="Toggle dark mode"
           >
-            {isDark ? '☀️' : '🌙'}
+            {isDark ? "☀️" : "🌙"}
           </button>
 
           {/* User account */}
           <UserButton
             appearance={{
               elements: {
-                avatarBox: 'w-7 h-7',
+                avatarBox: "w-7 h-7",
+                userButtonOuterIdentifier:
+                  "!text-slate-900 dark:!text-white font-medium text-base",
+                userButtonAvatarBox:
+                  "!border !border-gray-300 dark:!border-none !bg-slate-600 dark:!bg-transparent",
               },
             }}
           />
@@ -63,11 +69,26 @@ const MobileNav: React.FC = () => {
             aria-label="Open menu"
             aria-expanded={open}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
               {open ? (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
@@ -87,13 +108,13 @@ const MobileNav: React.FC = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.to === '/'}
+                end={item.to === "/"}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
                   `px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
-                      : 'text-slate-600 dark:text-slate-400'
+                      ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                      : "text-slate-600 dark:text-slate-400"
                   }`
                 }
               >
