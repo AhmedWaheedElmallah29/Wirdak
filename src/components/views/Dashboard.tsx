@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Chunk, Surah } from "../../types";
+import { useAuth } from "@clerk/react";
+import axios from "axios"; // استدعينا axios للباك إند
 import {
   getLearningChunks,
   getDueReviewChunks,
@@ -93,35 +95,100 @@ const Dashboard: React.FC<DashboardProps> = ({
   const relativeDate = useRelativeDate();
   const [mergeFlash, setMergeFlash] = useState(false);
   const [mergeResult, setMergeResult] = useState<string | null>(null);
+  const { userId } = useAuth(); // سحبنا الـ ID بتاع المستخدم
+  const [reviewLoadingId, setReviewLoadingId] = useState<string | null>(null);
 
   type MemorizingState = Record<
     string,
-    { step: "rating" | "success"; rating?: "hard" | "good" | "easy"; nextReviewStr?: string; exiting?: boolean }
+    {
+      step: "rating" | "success";
+      rating?: "hard" | "good" | "easy";
+      nextReviewStr?: string;
+      exiting?: boolean;
+      isLoading?: boolean;
+    }
   >;
   const [memorizingState, setMemorizingState] = useState<MemorizingState>({});
 
-  const handleMemorizeRate = (chunkId: string, rating: "hard" | "good" | "easy") => {
-    const daysMap = { hard: 1, good: 4, easy: 7 };
-    const days = daysMap[rating];
-    const nextDateObj = new Date(Date.now() + days * 86_400_000);
-    const dateStr = nextDateObj.toLocaleDateString(lang === "ar" ? "ar-EG" : "en-US", {
-      month: "short",
-      day: "numeric",
-    });
+  const handleMemorizeRate = async (
+    chunkId: string,
+    rating: "hard" | "good" | "easy",
+  ) => {
+    if (!userId) return;
 
-    setMemorizingState(prev => ({
+    setMemorizingState((prev) => ({
       ...prev,
-      [chunkId]: { step: "success", rating, nextReviewStr: t.dashboard.nextReviewOn(days, dateStr) }
+      [chunkId]: { ...prev[chunkId], isLoading: true },
     }));
 
-    onMarkMemorized(chunkId, rating);
+    try {
+      // إرسال التقييم للباك إند
+      await axios.post("http://localhost:5000/api/reviews/rate", {
+        userId,
+        chunkId,
+        rating,
+      });
 
-    setTimeout(() => {
-      setMemorizingState(prev => ({
+      const daysMap = { hard: 1, good: 4, easy: 7 };
+      const days = daysMap[rating];
+      // eslint-disable-next-line
+      const nextDateObj = new Date(Date.now() + days * 86_400_000);
+      const dateStr = nextDateObj.toLocaleDateString(
+        lang === "ar" ? "ar-EG" : "en-US",
+        {
+          month: "short",
+          day: "numeric",
+        },
+      );
+
+      setMemorizingState((prev) => ({
         ...prev,
-        [chunkId]: { ...prev[chunkId], exiting: true }
+        [chunkId]: {
+          step: "success",
+          rating,
+          nextReviewStr: t.dashboard.nextReviewOn(days, dateStr),
+        },
       }));
-    }, 2000);
+
+      onMarkMemorized(chunkId, rating);
+
+      setTimeout(() => {
+        setMemorizingState((prev) => ({
+          ...prev,
+          [chunkId]: { ...prev[chunkId], exiting: true },
+        }));
+      }, 2000);
+    } catch (error) {
+      console.error("❌ خطأ أثناء حفظ التقييم:", error);
+      alert("حدث خطأ أثناء الحفظ. تأكد من اتصالك.");
+      setMemorizingState((prev) => ({
+        ...prev,
+        [chunkId]: { ...prev[chunkId], isLoading: false },
+      }));
+    }
+  };
+
+  const handleQuickReviewRate = async (
+    chunkId: string,
+    rating: "hard" | "good" | "easy",
+  ) => {
+    if (!userId || reviewLoadingId) return;
+    setReviewLoadingId(chunkId);
+
+    try {
+      await axios.post("http://localhost:5000/api/reviews/rate", {
+        userId,
+        chunkId,
+        rating,
+      });
+
+      onRateReview(chunkId, rating);
+    } catch (error) {
+      console.error("❌ خطأ أثناء المراجعة السريعة:", error);
+      alert("حدث خطأ أثناء الحفظ.");
+    } finally {
+      setReviewLoadingId(null);
+    }
   };
 
   const learningChunks = getLearningChunks(chunks);
@@ -302,14 +369,16 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex flex-col gap-3">
             {learningChunks.map((chunk) => {
               const state = memorizingState[chunk.id];
-              if (state?.exiting) return null; // Unmount completely once exiting finishes (or handle via CSS max-h-0)
+              if (state?.exiting) return null;
 
               return (
                 <div
                   key={chunk.id}
                   className={`card transition-all duration-500 ease-in-out overflow-hidden border-s-4 border-s-violet-500 ${
-                    state?.exiting ? "opacity-0 max-h-0 py-0 my-0 border-0" : "max-h-[200px] opacity-100"
-                  }`}
+                    state?.exiting
+                      ? "opacity-0 max-h-0 py-0 my-0 border-0"
+                      : "max-h-[200px] opacity-100"
+                  } ${state?.isLoading ? "opacity-50 pointer-events-none" : ""}`}
                 >
                   {state?.step === "rating" ? (
                     <div className="flex flex-col items-center justify-center gap-3 w-full p-4">
@@ -337,7 +406,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                   ) : state?.step === "success" ? (
                     <div className="flex flex-col items-center justify-center gap-2 w-full p-4 text-center text-emerald-600 dark:text-emerald-400 animate-fade-in">
                       <div className="text-2xl">✅</div>
-                      <p className="text-sm font-semibold">{state.nextReviewStr}</p>
+                      <p className="text-sm font-semibold">
+                        {state.nextReviewStr}
+                      </p>
                     </div>
                   ) : (
                     <div className="p-4 flex items-center gap-4">
@@ -371,7 +442,12 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </div>
                       </div>
                       <button
-                        onClick={() => setMemorizingState(prev => ({ ...prev, [chunk.id]: { step: "rating" } }))}
+                        onClick={() =>
+                          setMemorizingState((prev) => ({
+                            ...prev,
+                            [chunk.id]: { step: "rating" },
+                          }))
+                        }
                         className="btn-good text-xs px-3 py-2 flex-shrink-0"
                       >
                         {t.dashboard.markMemorized}
@@ -431,7 +507,11 @@ const Dashboard: React.FC<DashboardProps> = ({
             {reviewChunks.map((chunk) => (
               <div
                 key={chunk.id}
-                className="card p-4 flex items-center gap-4 hover:shadow-md transition-shadow duration-200 border-s-4 border-s-emerald-500"
+                className={`card p-4 flex items-center gap-4 hover:shadow-md transition-all duration-200 border-s-4 border-s-emerald-500 ${
+                  reviewLoadingId === chunk.id
+                    ? "opacity-50 pointer-events-none scale-[0.98]"
+                    : ""
+                }`}
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center flex-shrink-0">
                   <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
@@ -460,7 +540,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                   {(["hard", "good", "easy"] as const).map((r) => (
                     <button
                       key={r}
-                      onClick={() => onRateReview(chunk.id, r)}
+                      onClick={() => handleQuickReviewRate(chunk.id, r)}
+                      disabled={reviewLoadingId === chunk.id}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all duration-200 ease-in-out cursor-pointer hover:scale-[1.02] active:scale-95 ${
                         r === "hard"
                           ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-500/10"

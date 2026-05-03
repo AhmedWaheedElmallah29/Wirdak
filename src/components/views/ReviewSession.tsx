@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import type { Chunk } from "../../types";
+import { useAuth } from "@clerk/react"; // 👈 استدعينا Clerk
+import axios from "axios"; // 👈 استدعينا Axios
 import { getDueReviewChunks } from "../../data/mockData";
 import ProgressBar from "../ui/ProgressBar";
 import { useI18n } from "../../i18n/I18nContext";
@@ -34,6 +36,7 @@ const ReviewSession: React.FC<ReviewSessionProps> = ({ chunks, onReview }) => {
   const { t, lang, formatRangeInfo } = useI18n();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { userId } = useAuth(); // 👈 سحبنا الـ ID الحقيقي
 
   const [queue, setQueue] = useState<Chunk[]>(() => {
     const due = getDueReviewChunks(chunks);
@@ -59,30 +62,45 @@ const ReviewSession: React.FC<ReviewSessionProps> = ({ chunks, onReview }) => {
   const [revealed, setRevealed] = useState(false);
   const [animating, setAnimating] = useState(false);
 
-  const handleRate = (chunkId: string, rating: Rating) => {
-    if (animating) return;
+  // 👈 خلينا الدالة دي async عشان تستنى الباك إند يرد
+  const handleRate = async (chunkId: string, rating: Rating) => {
+    if (animating || !userId) return;
     setAnimating(true);
-    setTimeout(() => {
-      const ratedChunk = queue.find((c) => c.id === chunkId);
-      if (ratedChunk) {
-        onReview(chunkId, rating);
-        setReviewed((prev) => [...prev, { chunk: ratedChunk, rating }]);
-      }
 
-      setQueue((prev) => {
-        const nextQueue = prev.filter((c) => c.id !== chunkId);
-        // Automatically expand the new first item
-        if (nextQueue.length > 0) {
-          setExpandedChunkId(nextQueue[0].id);
-        } else {
-          setExpandedChunkId(null);
-        }
-        return nextQueue;
+    try {
+      // 👈 إرسال التقييم لقاعدة البيانات
+      await axios.post("http://localhost:5000/api/reviews/rate", {
+        userId,
+        chunkId,
+        rating,
       });
 
-      setRevealed(false);
+      // بعد ما الباك إند يرد بنجاح، نشغل الأنيميشن ونحدث الفرونت إند
+      setTimeout(() => {
+        const ratedChunk = queue.find((c) => c.id === chunkId);
+        if (ratedChunk) {
+          onReview(chunkId, rating);
+          setReviewed((prev) => [...prev, { chunk: ratedChunk, rating }]);
+        }
+
+        setQueue((prev) => {
+          const nextQueue = prev.filter((c) => c.id !== chunkId);
+          if (nextQueue.length > 0) {
+            setExpandedChunkId(nextQueue[0].id);
+          } else {
+            setExpandedChunkId(null);
+          }
+          return nextQueue;
+        });
+
+        setRevealed(false);
+        setAnimating(false);
+      }, 350);
+    } catch (error) {
+      console.error("❌ خطأ أثناء حفظ التقييم:", error);
+      alert("حدث خطأ أثناء الحفظ. تأكد من اتصالك بالإنترنت.");
       setAnimating(false);
-    }, 350);
+    }
   };
 
   const handleExpand = (chunkId: string) => {
