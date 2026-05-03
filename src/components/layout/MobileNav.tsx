@@ -57,7 +57,7 @@ const MobileNav: React.FC = () => {
                 userButtonOuterIdentifier:
                   "!text-slate-900 dark:!text-white font-medium text-base",
                 userButtonAvatarBox:
-                  "!border !border-gray-300 dark:!border-none !bg-slate-600 dark:!bg-transparent",
+                  "!border !border-gray-300 dark:!border-none !bg-slate-600 dark:!bg-slate-500",
               },
             }}
           />
