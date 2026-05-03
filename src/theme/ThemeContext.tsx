@@ -5,9 +5,9 @@ import React, {
   useCallback,
   useEffect,
   type ReactNode,
-} from 'react';
+} from "react";
 
-type Theme = 'light' | 'dark';
+type Theme = "light" | "dark";
 
 interface ThemeContextValue {
   theme: Theme;
@@ -17,31 +17,35 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = 'wirdak-theme';
+const STORAGE_KEY = "Thabbit-theme";
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored === 'light' || stored === 'dark') return stored;
+    if (stored === "light" || stored === "dark") return stored;
     // Auto-detect from system
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   });
 
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
 
   // Sync class on <html> tag
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
-      root.classList.add('dark');
+      root.classList.add("dark");
     } else {
-      root.classList.remove('dark');
+      root.classList.remove("dark");
     }
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme, isDark]);
 
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }, []);
 
   const value: ThemeContextValue = {
@@ -50,11 +54,13 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     toggleTheme,
   };
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 };
 
 export const useTheme = (): ThemeContextValue => {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used inside <ThemeProvider>');
+  if (!ctx) throw new Error("useTheme must be used inside <ThemeProvider>");
   return ctx;
 };

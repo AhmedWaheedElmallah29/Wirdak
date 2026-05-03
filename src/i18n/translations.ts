@@ -2,7 +2,7 @@ export type Lang = "en" | "ar";
 
 const en = {
   // ── App / Brand ──────────────────────────────────────────────────────────
-  appName: "Wirdak",
+  appName: "Thabbit",
   appSubtitle: "Quran Tracker",
 
   // ── Nav ──────────────────────────────────────────────────────────────────
@@ -64,7 +64,8 @@ const en = {
     good: "👍 Good",
     easy: "🌟 Easy",
     howWellMemorized: "How well did you memorize this?",
-    nextReviewOn: (days: number, date: string) => `Next review in ${days} day${days > 1 ? 's' : ''}`,
+    nextReviewOn: (days: number, date: string) =>
+      `Next review in ${days} day${days > 1 ? "s" : ""}`,
   },
 
   // ── Review Session ────────────────────────────────────────────────────────
@@ -212,7 +213,7 @@ const en = {
 } as const;
 
 const ar: typeof en = {
-  appName: "وِردَك",
+  appName: "ثبِّت",
   appSubtitle: "متتبع القرآن",
 
   nav: {
@@ -265,7 +266,8 @@ const ar: typeof en = {
     good: "👍 جيد",
     easy: "🌟 سهل",
     howWellMemorized: "كيف كان مستوى حفظك؟",
-    nextReviewOn: (days: number, date: string) => `مراجعتك القادمة بعد ${days} ${days === 1 ? 'يوم' : days === 2 ? 'يومين' : days <= 10 ? 'أيام' : 'يومًا'}`,
+    nextReviewOn: (days: number, date: string) =>
+      `مراجعتك القادمة بعد ${days} ${days === 1 ? "يوم" : days === 2 ? "يومين" : days <= 10 ? "أيام" : "يومًا"}`,
   },
 
   review: {

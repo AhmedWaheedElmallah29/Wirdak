@@ -21,7 +21,7 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 // ─── Provider ──────────────────────────────────────────────────────────────
-const STORAGE_KEY = "wirdak-lang";
+const STORAGE_KEY = "Thabbit-lang";
 
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({
   children,
